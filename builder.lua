@@ -1,10 +1,7 @@
 --- UI for Builder
 
----@class SCM
-local scm = require("scm")
-
 ---@class Builder_Lib
-local builder = require("/libs/builder-prog/builder-lib")
+local builder = require("/progs/builder-prog/builder-lib")
 
 
 local function help()

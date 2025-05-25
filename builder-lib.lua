@@ -8,7 +8,7 @@ local Builder_Lib = {
 
 
 ---@class SCM
-local scm = require("scm")
+local scm = require("./scm")
 
 ---@class turtleController
 local turtleController = scm:load("turtleController")
@@ -30,7 +30,6 @@ local function placeDownItem(itemname)
     selectItemToPlace(itemname)
     if turtle.detectDown() then
         local _, down = turtle.inspectDown()
-        print("Fond block to replace: ", down.name)
         turtleController:tryAction("digD")
     end
     local succ, txt = turtle.placeDown()
