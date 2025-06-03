@@ -33,13 +33,13 @@ package.path = package.path .. ";"
     .."libs/inventory/?.lua;"
     .."libs/peripherals/?.lua;"
 
----@class Vector
+---@type Vector
 _G.vector = require("vector")
----@class Builder_Lib
+---@type Builder_Lib
 local builder
 
 
----@class TurtleEmulator
+---@type TurtleEmulator
 local turtleEmulator = require("turtleEmulator")
 
 local function beforeeach()
@@ -69,12 +69,12 @@ describe("Testing placing Floor", function ()
     local blockAmount = 64
     before_each(function ()
         beforeeach()
-        ---@class Item
+        ---@type Item
         local itemToAdd = {name = "minecraft:cobblestone", count = blockAmount, placeAble = true}
         local itemToAdd2 = {name = "minecraft:cobblestone", count = blockAmount, placeAble = true}
         turtle.addItemToInventory(itemToAdd, 1)
         turtle.addItemToInventory(itemToAdd2, 3)
-        ---@class Item
+        ---@type Item
         local coal = {name = "minecraft:coal", count = 64, fuelgain = 8}
         turtle.addItemToInventory(coal, 2)
     end)

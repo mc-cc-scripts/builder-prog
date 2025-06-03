@@ -1,7 +1,7 @@
 ---@class Builder_Lib
 local Builder_Lib = {
     movementDirection = {
-        height = "bottom",
+        height = "up",
         width = "right"
     }
 }
@@ -36,6 +36,27 @@ local function placeDownItem(itemname)
     if not succ then error(txt) end
 end
 
+local function getTurningDirection(builderRef ,cHorizontal, cVertical)
+    assert(type(builderRef) == "table", "needs self reference!")
+    cHorizontal = cHorizontal or 1
+    cVertical = cVertical or 1
+    local hModulo = cHorizontal % 2
+    local vModulo = cVertical % 2
+    if builderRef.movementDirection.width == "left" then
+        hModulo = 1 - hModulo -- toggle between 1 / 0
+    end
+    if builderRef.movementDirection.height == "down" and cVertical ~= 0 then
+        vModulo = 1 - vModulo -- toggle between 1 / 0
+    end
+    -- TODO Simplify
+    if (hModulo == 1 and vModulo == 1) or (hModulo == 0 and vModulo == 0) then
+        turtle.turnRight()
+    else
+        turtle.turnLeft()
+    end
+
+end
+
 local function returnToStartingPos()
 
 end
@@ -44,26 +65,8 @@ end
 ---@param length number
 ---@param width number
 function Builder_Lib:floor(length, width)
-
-    local t
-    if self.movementDirection.width == "right" then
-        t = function(modulo)
-            if modulo == 1 then
-                turtle.turnRight()
-            else
-                turtle.turnLeft()
-            end
-        end
-    else
-        t = function(modulo)
-            if modulo == 1 then
-                turtle.turnLeft()
-            else
-                turtle.turnRight()
-            end
-        end
-    end
-
+    length = length or 1
+    width = width or 1
     turtle.select(1)
     local block = turtle.getItemDetail()
     if block == nil then error("No block at item slot 1") end
@@ -74,11 +77,54 @@ function Builder_Lib:floor(length, width)
         end
         placeDownItem(block.name)
         if (j < width) then
-            t(j % 2)
+            getTurningDirection(self, j)
             turtleController:goStraight(1)
-            t(j % 2)
+            getTurningDirection(self, j)
         end
     end
+    returnToStartingPos()
+end
+
+function Builder_Lib:clearArea(length, width, height)
+    local upDownDig = function(cHeight, maxHeight)
+        if(cHeight < maxHeight) then
+            turtleController:tryAction("digU")
+        end
+        if(cHeight > 1) then
+            turtleController:tryAction("digD")
+        end
+    end
+    local currentHeight = 1
+    local k = 1
+    while true do 
+        for j = 1, width, 1 do
+            for i = 1, length - 1, 1 do
+                upDownDig(currentHeight, height)
+                turtleController:goStraight(1)
+            end
+            upDownDig(currentHeight, height)
+            if (j < width) then
+                getTurningDirection(self, j, k)
+                turtleController:goStraight(1)
+                getTurningDirection(self, j, k)
+            end
+        end
+        upDownDig(currentHeight, height)
+
+        -- go up 3 blocks
+        local u = height - currentHeight
+        if u > 3 then 
+            u = 3
+        end
+        if u == 0 then
+            break
+        end
+        currentHeight = currentHeight + u
+        k = k + 1
+        turtleController:goUp(u)
+        turtleController:tryMove("tA")
+    end
+
     returnToStartingPos()
 end
 return Builder_Lib
