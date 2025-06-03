@@ -36,20 +36,29 @@ local function placeDownItem(itemname)
     if not succ then error(txt) end
 end
 
-local function getTurningDirection(builderRef ,cHorizontal, cVertical)
+local function getTurningDirection(builderRef ,cHorizontal, cVertical, maxWidth)
     assert(type(builderRef) == "table", "needs self reference!")
     cHorizontal = cHorizontal or 1
     cVertical = cVertical or 1
+    maxWidth = maxWidth or 2 -- default is even
+    local even = maxWidth % 2
     local hModulo = cHorizontal % 2
     local vModulo = cVertical % 2
-    if builderRef.movementDirection.width == "left" then
+    if builderRef.movementDirection.width == "right" then
         hModulo = 1 - hModulo -- toggle between 1 / 0
     end
-    if builderRef.movementDirection.height == "down" and cVertical ~= 0 then
-        vModulo = 1 - vModulo -- toggle between 1 / 0
-    end
+
     -- TODO Simplify
-    if (hModulo == 1 and vModulo == 1) or (hModulo == 0 and vModulo == 0) then
+    -- with vModulo == hModulo xor even
+    if (even == 1 and vModulo == 0) then
+        if (hModulo ~= vModulo) then
+            turtle.turnRight()
+        else
+            turtle.turnLeft()
+        end
+        return
+    end
+    if (hModulo == vModulo) then
         turtle.turnRight()
     else
         turtle.turnLeft()
@@ -104,24 +113,29 @@ function Builder_Lib:clearArea(length, width, height)
             end
             upDownDig(currentHeight, height)
             if (j < width) then
-                getTurningDirection(self, j, k)
+                getTurningDirection(self, j, k, width)
                 turtleController:goStraight(1)
-                getTurningDirection(self, j, k)
+                getTurningDirection(self, j, k, width)
             end
         end
         upDownDig(currentHeight, height)
 
         -- go up 3 blocks
-        local u = height - currentHeight
-        if u > 3 then 
-            u = 3
+        local diff = height - currentHeight
+        if diff > 3 then 
+            diff = 3
         end
-        if u == 0 then
+        if diff == 0 then
             break
         end
-        currentHeight = currentHeight + u
+        if self.movementDirection.height == "up" then
+            turtleController:goUp(diff)
+        else
+            turtleController:goDown(diff)
+        end
+        currentHeight = currentHeight + diff
+        
         k = k + 1
-        turtleController:goUp(u)
         turtleController:tryMove("tA")
     end
 

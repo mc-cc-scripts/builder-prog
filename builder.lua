@@ -1,7 +1,7 @@
 --- UI for Builder
 
 ---@class Builder_Lib
-local builder = require("/progs/builder-prog/builder-lib")
+local builder = require("builder-lib")
 
 
 local function help()

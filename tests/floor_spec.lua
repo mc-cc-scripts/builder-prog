@@ -97,6 +97,7 @@ describe("Testing placing Floor", function ()
     it("Create 9x9 floor", function()
         assert.are.equal(0, countTableLength(turtleEmulator.blocks))
         local succ, err = xpcall(function ()
+            builder.movementDirection.width = "right"
             builder:floor(9, 9)
         end, debug.traceback)
         if err then error(err) end
@@ -137,6 +138,7 @@ describe("Testing placing Floor", function ()
     it("Create 10x10 floor", function()
         assert.are.equal(0, countTableLength(turtleEmulator.blocks))
         local succ, err = xpcall(function ()
+            builder.movementDirection.width = "right"
             builder:floor(10, 10)
         end, debug.traceback)
         if err then error(err) end
