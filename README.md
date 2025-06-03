@@ -22,8 +22,3 @@ builder floor -w <width> -l <length> -m <"left"|"right">
 ```
 
 # Dev - Documentaion
-
-### Submodules used
-- turtleControler-lib
-- turtleEmulator-lib
-- - plus submodules
