@@ -33,13 +33,15 @@ package.path = package.path .. ";"
     .."libs/inventory/?.lua;"
     .."libs/peripherals/?.lua;"
 
----@class Vector
+---@type Vector
 _G.vector = require("vector")
----@class Builder_Lib
+---@type Builder_Lib
 local builder
 
+_G.textutils = require("textutils")
 
----@class TurtleEmulator
+
+---@type TurtleEmulator
 local turtleEmulator = require("turtleEmulator")
 
 local function beforeeach()
@@ -69,12 +71,12 @@ describe("Testing placing Floor", function ()
     local blockAmount = 64
     before_each(function ()
         beforeeach()
-        ---@class Item
+        ---@type Item
         local itemToAdd = {name = "minecraft:cobblestone", count = blockAmount, placeAble = true}
         local itemToAdd2 = {name = "minecraft:cobblestone", count = blockAmount, placeAble = true}
         turtle.addItemToInventory(itemToAdd, 1)
         turtle.addItemToInventory(itemToAdd2, 3)
-        ---@class Item
+        ---@type Item
         local coal = {name = "minecraft:coal", count = 64, fuelgain = 8}
         turtle.addItemToInventory(coal, 2)
     end)
@@ -97,6 +99,7 @@ describe("Testing placing Floor", function ()
     it("Create 9x9 floor", function()
         assert.are.equal(0, countTableLength(turtleEmulator.blocks))
         local succ, err = xpcall(function ()
+            builder.movementDirection.width = "right"
             builder:floor(9, 9)
         end, debug.traceback)
         if err then error(err) end
@@ -137,6 +140,7 @@ describe("Testing placing Floor", function ()
     it("Create 10x10 floor", function()
         assert.are.equal(0, countTableLength(turtleEmulator.blocks))
         local succ, err = xpcall(function ()
+            builder.movementDirection.width = "right"
             builder:floor(10, 10)
         end, debug.traceback)
         if err then error(err) end
@@ -162,6 +166,7 @@ describe("Testing placing Floor", function ()
         if err then error(err) end
         assert.are.equal(100, countTableLength(turtleEmulator.blocks))
         local blocksTested = 0
+        -- print("Blocks placed", textutils.serialize(turtleEmulator.blocks))
         for j = -9, 0, 1 do
             for i = 0, 9, 1 do
                 blocksTested = blocksTested + 1

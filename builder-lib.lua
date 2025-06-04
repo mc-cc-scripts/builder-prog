@@ -1,7 +1,7 @@
 ---@class Builder_Lib
 local Builder_Lib = {
     movementDirection = {
-        height = "bottom",
+        height = "up",
         width = "right"
     }
 }
@@ -36,34 +36,44 @@ local function placeDownItem(itemname)
     if not succ then error(txt) end
 end
 
+local function getTurningDirection(builderRef ,cHorizontal, cVertical, maxWidth)
+    assert(type(builderRef) == "table", "needs self reference!")
+    cHorizontal = cHorizontal or 1
+    cVertical = cVertical or 1
+    maxWidth = maxWidth or 2 -- default is even
+
+    local hModulo = cHorizontal % 2
+    local vModulo = cVertical % 2
+    
+    -- if odd, pretent to always be at base y-level and CONTINUE the left / right toggle
+    -- making vModulo static
+    if (maxWidth % 2 == 1) then
+        vModulo = 1
+    end
+
+    if builderRef.movementDirection.width == "left" then
+        hModulo = 1 - hModulo -- invert 1 <=> 0
+    end
+
+    if (hModulo == vModulo) then
+        turtle.turnRight()
+    else
+        turtle.turnLeft()
+    end
+
+end
+
 local function returnToStartingPos()
 
 end
 
 ---builds the floor with the given size
----@param length number
----@param width number
+---@param length number | nil
+---@param width number | nil
+---@return boolean success
 function Builder_Lib:floor(length, width)
-
-    local t
-    if self.movementDirection.width == "right" then
-        t = function(modulo)
-            if modulo == 1 then
-                turtle.turnRight()
-            else
-                turtle.turnLeft()
-            end
-        end
-    else
-        t = function(modulo)
-            if modulo == 1 then
-                turtle.turnLeft()
-            else
-                turtle.turnRight()
-            end
-        end
-    end
-
+    length = length or 1
+    width = width or 1
     turtle.select(1)
     local block = turtle.getItemDetail()
     if block == nil then error("No block at item slot 1") end
@@ -74,11 +84,81 @@ function Builder_Lib:floor(length, width)
         end
         placeDownItem(block.name)
         if (j < width) then
-            t(j % 2)
+            getTurningDirection(self, j)
             turtleController:goStraight(1)
-            t(j % 2)
+            getTurningDirection(self, j)
         end
     end
     returnToStartingPos()
+    return true
+end
+
+---clears an area with of specified size
+---@param length number | nil
+---@param width number | nil
+---@param height number | nil
+---@return boolean success
+function Builder_Lib:clearArea(length, width, height)
+    local upDownDig = function(cHeight, maxHeight)
+        if Builder_Lib.movementDirection.height == "up" then
+            if(cHeight < maxHeight) then
+                turtleController:tryAction("digU")
+            end
+            if(cHeight > 1) then
+                turtleController:tryAction("digD")
+            end
+        else
+            if(cHeight < maxHeight) then
+                turtleController:tryAction("digD")
+            end
+            if(cHeight > 1) then
+                turtleController:tryAction("digU")
+            end
+        end
+    end
+    length = length or 1
+    width = width or 1
+    height = height or 1
+
+
+    local currentHeight = 1
+    local k = 1
+    while true do 
+        for j = 1, width, 1 do
+            for i = 1, length - 1, 1 do
+                upDownDig(currentHeight, height)
+                turtleController:goStraight(1)
+            end
+            upDownDig(currentHeight, height)
+            if (j < width) then
+                getTurningDirection(self, j, k, width)
+                turtleController:goStraight(1)
+                getTurningDirection(self, j, k, width)
+            else
+            end
+        end
+        upDownDig(currentHeight, height)
+
+        -- go up 3 blocks
+        local diff = height - currentHeight
+        if diff > 3 then 
+            diff = 3
+        end
+        if diff <= 1 then
+            break
+        end
+        if self.movementDirection.height == "up" then
+            turtleController:goUp(diff)
+        else
+            turtleController:goDown(diff)
+        end
+        currentHeight = currentHeight + diff
+        
+        k = k + 1
+        turtleController:tryMove("tA")
+    end
+
+    returnToStartingPos()
+    return true
 end
 return Builder_Lib
