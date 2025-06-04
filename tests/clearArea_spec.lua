@@ -151,27 +151,11 @@ describe("Testing ClearArea Function", function()
         assert(998, countTableLength(turtleEmulator.blocks))
     end)
 
-    it("Clear 4 x 4 x 4 | Moving: left up", function()
-        -- pending("pending")
-        builder.movementDirection.height = "up"
-        builder.movementDirection.width = "left"
-        builder:clearArea(4,4,4)
-
-        local n = countTableLength(turtleEmulator.blocks)
-        assert(998 - (4*4*4), n)
-        local m, blocks = checkEmptyFromTo(vector.new(0,0,0),vector.new(3,3,3))
-        assert.are.equal(0,m)
-    end)
-
     it("Clear 4 x 4 x 4 | Moving: right up", function()
         -- pending("pending")
         builder.movementDirection.height = "up"
         builder.movementDirection.width = "right"
-        ---position turtle at 0, 0, 3
-        turtle.position = vector.new(-1, 0, 3)
-        turtle.refuel()
-        turtle.dig()
-        assert.is_true(turtle.forward())
+
         
         builder:clearArea(4,4,4)
 
@@ -181,10 +165,29 @@ describe("Testing ClearArea Function", function()
         assert.are.equal(0,m)
     end)
 
-        it("Clear 5 x 5 x 5 | Moving: left down", function()
-        pending("pending")
-        builder.movementDirection.height = "down"
+    it("Clear 4 x 4 x 4 | Moving: left up", function()
+        -- pending("pending")
+        builder.movementDirection.height = "up"
         builder.movementDirection.width = "left"
+        
+        ---position turtle at 0, 0, 3
+        turtle.position = vector.new(-1, 0, 3)
+        turtle.refuel()
+        turtle.dig()
+        assert.is_true(turtle.forward())
+
+        builder:clearArea(4,4,4)
+
+        local n = countTableLength(turtleEmulator.blocks)
+        assert(998 - (4*4*4), n)
+        local m, blocks = checkEmptyFromTo(vector.new(0,0,0),vector.new(3,3,3))
+        assert.are.equal(0,m)
+    end)
+
+    it("Clear 5 x 5 x 5 | Moving: right down", function()
+        -- pending("pending")
+        builder.movementDirection.height = "down"
+        builder.movementDirection.width = "right"
         
         ---position turtle at 0, 4, 0
         turtle.position = vector.new(-1, 4, 0)
@@ -197,7 +200,26 @@ describe("Testing ClearArea Function", function()
         local n = countTableLength(turtleEmulator.blocks)
         assert(998 - (5*5*5), n)
         local m, blocks = checkEmptyFromTo(vector.new(0,0,0),vector.new(4,4,4))
-        print(textutils.serialize(blocks))
         assert.are.equal(0,m)
     end)
+
+    it("Clear 5 x 5 x 5 | Moving: left down", function()
+        -- pending("pending")
+        builder.movementDirection.height = "down"
+        builder.movementDirection.width = "left"
+        
+        ---position turtle at 0, 4, 0
+        turtle.position = vector.new(-1, 4, 4)
+        turtle.refuel()
+        turtle.dig()
+        assert.is_true(turtle.forward())
+
+        builder:clearArea(5,5,5)
+
+        local n = countTableLength(turtleEmulator.blocks)
+        assert(998 - (5*5*5), n)
+        local m, blocks = checkEmptyFromTo(vector.new(0,0,0),vector.new(4,4,4))
+        assert.are.equal(0,m)
+    end)
+
 end)

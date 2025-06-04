@@ -7,15 +7,16 @@ local builder = require("builder-lib")
 local function help()
     print("Usage:")
     print("builder <command> <options>")
-    print("")
     print("Commands: ")
-    print("- 'floor'")
-    print("")
+    print("'floor'")
+    print("'clearArea'")
     print("Options:")
-    print("-m[movementDirection] <'left'|'right'> [default: right]")
+    print("-mH[movementDir. Horizon] <'left'|'right'> [default: right]")
+    print("-mV[movementDir. Vertical] <'left'|'right'> [default: right]")
     print("-w[width] <number>")
     print("-l[length] <number>")
-    print("-h[help]")
+    print("-h[height] <number>")
+    print("-help")
 end
 if #arg == 0 then
     help()
@@ -26,15 +27,19 @@ end
 local stopExec = false
 
 local size = {
-    ["length"] = 0,
-    ["width"] = 0,
-    ["height"] = 0
+    ["length"] = nil,
+    ["width"] = nil,
+    ["height"] = nil
 }
 
 local argsSwitch = {
-    ["-m"] = function(no)
+    ["-mH"] = function(no)
         no[1] = no[1] + 1
         builder.movementDirection.width = arg[no[1]]
+    end,
+    ["-mV"] = function (no)
+        no[1] = no[1] + 1
+        builder.movementDirection.height = arg[no[1]]
     end,
     ["-l"] = function(no)
         no[1] = no[1] + 1
@@ -44,7 +49,16 @@ local argsSwitch = {
         no[1] = no[1] + 1
         size["width"] = tonumber(arg[no[1]]) or error("width not valid")
     end,
-    ["-h"] = function()
+    ["-h"] = function(no)
+        no[1] = no[1] + 1
+        if not tonumber(arg[no[1]]) then
+            help()
+            stopExec = true
+            return
+        end
+        size["height"] = tonumber(arg[no[1]])
+    end,
+    ["-help"] = function()
         help()
         stopExec = true
     end,
@@ -56,6 +70,9 @@ local argsSwitch = {
 local commands = {
     ["floor"] = function()
         builder:floor(size["length"], size["width"])
+    end,
+    ["clearArea"] = function()
+        builder:clearArea(size["length"], size["width"], size["height"])
     end
 }
 

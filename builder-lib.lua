@@ -41,23 +41,20 @@ local function getTurningDirection(builderRef ,cHorizontal, cVertical, maxWidth)
     cHorizontal = cHorizontal or 1
     cVertical = cVertical or 1
     maxWidth = maxWidth or 2 -- default is even
-    local even = maxWidth % 2
+
     local hModulo = cHorizontal % 2
     local vModulo = cVertical % 2
-    if builderRef.movementDirection.width == "right" then
-        hModulo = 1 - hModulo -- toggle between 1 / 0
+    
+    -- if odd, pretent to always be at base y-level and CONTINUE the left / right toggle
+    -- making vModulo static
+    if (maxWidth % 2 == 1) then
+        vModulo = 1
     end
 
-    -- TODO Simplify
-    -- with vModulo == hModulo xor even
-    if (even == 1 and vModulo == 0) then
-        if (hModulo ~= vModulo) then
-            turtle.turnRight()
-        else
-            turtle.turnLeft()
-        end
-        return
+    if builderRef.movementDirection.width == "left" then
+        hModulo = 1 - hModulo -- invert 1 <=> 0
     end
+
     if (hModulo == vModulo) then
         turtle.turnRight()
     else
@@ -71,8 +68,9 @@ local function returnToStartingPos()
 end
 
 ---builds the floor with the given size
----@param length number
----@param width number
+---@param length number | nil
+---@param width number | nil
+---@return boolean success
 function Builder_Lib:floor(length, width)
     length = length or 1
     width = width or 1
@@ -92,17 +90,37 @@ function Builder_Lib:floor(length, width)
         end
     end
     returnToStartingPos()
+    return true
 end
 
+---clears an area with of specified size
+---@param length number | nil
+---@param width number | nil
+---@param height number | nil
+---@return boolean success
 function Builder_Lib:clearArea(length, width, height)
     local upDownDig = function(cHeight, maxHeight)
-        if(cHeight < maxHeight) then
-            turtleController:tryAction("digU")
-        end
-        if(cHeight > 1) then
-            turtleController:tryAction("digD")
+        if Builder_Lib.movementDirection.height == "up" then
+            if(cHeight < maxHeight) then
+                turtleController:tryAction("digU")
+            end
+            if(cHeight > 1) then
+                turtleController:tryAction("digD")
+            end
+        else
+            if(cHeight < maxHeight) then
+                turtleController:tryAction("digD")
+            end
+            if(cHeight > 1) then
+                turtleController:tryAction("digU")
+            end
         end
     end
+    length = length or 1
+    width = width or 1
+    height = height or 1
+
+
     local currentHeight = 1
     local k = 1
     while true do 
@@ -116,6 +134,7 @@ function Builder_Lib:clearArea(length, width, height)
                 getTurningDirection(self, j, k, width)
                 turtleController:goStraight(1)
                 getTurningDirection(self, j, k, width)
+            else
             end
         end
         upDownDig(currentHeight, height)
@@ -125,7 +144,7 @@ function Builder_Lib:clearArea(length, width, height)
         if diff > 3 then 
             diff = 3
         end
-        if diff == 0 then
+        if diff <= 1 then
             break
         end
         if self.movementDirection.height == "up" then
@@ -140,5 +159,6 @@ function Builder_Lib:clearArea(length, width, height)
     end
 
     returnToStartingPos()
+    return true
 end
 return Builder_Lib

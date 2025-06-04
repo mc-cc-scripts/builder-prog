@@ -38,6 +38,8 @@ _G.vector = require("vector")
 ---@type Builder_Lib
 local builder
 
+_G.textutils = require("textutils")
+
 
 ---@type TurtleEmulator
 local turtleEmulator = require("turtleEmulator")
@@ -164,6 +166,7 @@ describe("Testing placing Floor", function ()
         if err then error(err) end
         assert.are.equal(100, countTableLength(turtleEmulator.blocks))
         local blocksTested = 0
+        -- print("Blocks placed", textutils.serialize(turtleEmulator.blocks))
         for j = -9, 0, 1 do
             for i = 0, 9, 1 do
                 blocksTested = blocksTested + 1
