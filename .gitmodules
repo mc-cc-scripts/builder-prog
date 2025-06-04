@@ -1,8 +1,0 @@
-[submodule "turtleController-lib"]
-	path = turtleController-lib
-	url = https://github.com/mc-cc-scripts/turtleController-lib.git
-	branch = master
-[submodule "turtleEmulator-lib"]
-	path = turtleEmulator-lib
-	url = https://github.com/mc-cc-scripts/turtleEmulator-lib.git
-	branch = master
