@@ -15,6 +15,8 @@ libs=(
     "turtleEmulator-lib"
     "turtleController-lib"
     "eventHandler-lib"
+    "turtleResourceManager-lib"
+    "config-lib"
 )
 
 # Basic setup variables

@@ -7,11 +7,14 @@ local Builder_Lib = {
 }
 
 
----@class SCM
+---@type SCM
 local scm = require("./scm")
 
----@class turtleController
+---@type turtleController
 local turtleController = scm:load("turtleController")
+
+---@type TurtleResourceManager
+local tResourceManager = scm:load("turtleResourceManager")
 
 turtleController.canBreakBlocks = true
 
@@ -115,7 +118,12 @@ function Builder_Lib:clearArea(length, width, height)
                 turtleController:tryAction("digU")
             end
         end
+    end    
+    
+    local filterFunc = function(item)
+        return string.find(item.name, "coal") == nil
     end
+    
     length = length or 1
     width = width or 1
     height = height or 1
@@ -123,11 +131,17 @@ function Builder_Lib:clearArea(length, width, height)
 
     local currentHeight = 1
     local k = 1
+    local manageSpace = tResourceManager:checkSetup()
     while true do 
         for j = 1, width, 1 do
             for i = 1, length - 1, 1 do
                 upDownDig(currentHeight, height)
                 turtleController:goStraight(1)
+            end
+            if manageSpace then
+                if tResourceManager:manageSpace(10, filterFunc) == 3 then
+                    error("Errorhandling not finished, cound not pickup Chest!")
+                end
             end
             upDownDig(currentHeight, height)
             if (j < width) then

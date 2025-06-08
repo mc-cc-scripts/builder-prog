@@ -40,6 +40,9 @@ local builder
 
 _G.textutils = require("textutils")
 
+---@type SettingsManager
+_G.settings = require("settings")
+
 
 ---@type TurtleEmulator
 local turtleEmulator = require("turtleEmulator")

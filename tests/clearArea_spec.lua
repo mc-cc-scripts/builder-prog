@@ -42,8 +42,11 @@ local helper = require("helperFunctions")
 ---@type Vector
 _G.vector = require("vector")
 
----@type TextUtils
 _G.textutils = require("textutils")
+
+---@type SettingsManager
+_G.settings = require("settings")
+
 
 ---@type Builder_Lib
 local builder
@@ -220,6 +223,28 @@ describe("Testing ClearArea Function", function()
         assert(998 - (5*5*5), n)
         local m, blocks = checkEmptyFromTo(vector.new(0,0,0),vector.new(4,4,4))
         assert.are.equal(0,m)
+    end)
+
+    it("Test ChestDumping", function()
+        builder.movementDirection.height = "up"
+        builder.movementDirection.width = "right"
+        
+        for i = 2, 14, 1 do
+            turtle.addItemToInventory({name = "minecraft:dirt", count = 64, maxcount = 64, placeAble = true}, i)
+        end
+        local tmpChest = {name = "enderstorage:ender_chest", count = 1, maxcount = 1, placeAble = true}
+        turtle.addItemToInventory(tmpChest, 16)
+        local enderCHest = turtleEmulator:addInventoryToItem(tmpChest)
+
+        builder:clearArea(5,5,5)
+        local n = countTableLength(turtleEmulator.blocks)
+        assert(998 - (5*5*5), n)
+        local m, blocks = checkEmptyFromTo(vector.new(0,0,0),vector.new(4,4,4))
+        assert.are.equal(0,m)
+        assert.are.same("minecraft:coal", turtle.getItemDetail(1).name)
+        assert.are.same("minecraft:stone", turtle.getItemDetail(2).name) -- only does the last Line without clearing inventory
+        assert.are.same(nil, turtle.getItemDetail(3))
+        assert.are.same("minecraft:dirt", turtle.getItemDetail(14).name)
     end)
 
 end)
