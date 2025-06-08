@@ -232,7 +232,7 @@ describe("Testing ClearArea Function", function()
         for i = 2, 14, 1 do
             turtle.addItemToInventory({name = "minecraft:dirt", count = 64, maxcount = 64, placeAble = true}, i)
         end
-        local tmpChest = {name = "enderstorage:ender_chest", count = 1, maxcount = 1, placeAble = true}
+        local tmpChest = {name = "enderchests:ender_chest", count = 1, maxcount = 1, placeAble = true}
         turtle.addItemToInventory(tmpChest, 16)
         local enderCHest = turtleEmulator:addInventoryToItem(tmpChest)
 
