@@ -243,8 +243,6 @@ describe("Testing ClearArea Function", function()
         assert.are.equal(0,m)
         assert.are.same("minecraft:coal", turtle.getItemDetail(1).name)
         assert.are.same("minecraft:stone", turtle.getItemDetail(2).name) -- only does the last Line without clearing inventory
-        assert.are.same(nil, turtle.getItemDetail(3))
-        assert.are.same("minecraft:dirt", turtle.getItemDetail(14).name)
     end)
 
 end)

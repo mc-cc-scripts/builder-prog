@@ -138,8 +138,8 @@ function Builder_Lib:clearArea(length, width, height)
                 upDownDig(currentHeight, height)
                 turtleController:goStraight(1)
             end
-            if manageSpace then
-                if tResourceManager:manageSpace(10, filterFunc) == 3 then
+            if manageSpace and tResourceManager:getFreeSlots() < 5 then
+                if tResourceManager:manageSpace(12, filterFunc) == 3 then
                     error("Errorhandling not finished, cound not pickup Chest!")
                 end
             end
