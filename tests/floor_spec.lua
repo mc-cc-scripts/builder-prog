@@ -181,6 +181,28 @@ describe("Testing placing Floor", function ()
         assert.are.equal(100, blocksTested)
     end)
 
+        it("Create 10x10 floor - to Left - above", function()
+        assert.are.equal(0, countTableLength(turtleEmulator.blocks))
+        local succ, err = xpcall(function ()
+            builder.movementDirection.width = "left"
+            builder.placeDirection = "up"
+            builder:floor(10, 10)
+        end, debug.traceback)
+        if err then error(err) end
+        assert.are.equal(100, countTableLength(turtleEmulator.blocks))
+        local blocksTested = 0
+        -- print("Blocks placed", textutils.serialize(turtleEmulator.blocks))
+        for j = -9, 0, 1 do
+            for i = 0, 9, 1 do
+                blocksTested = blocksTested + 1
+                assert.is.truthy(
+                    turtleEmulator:getBlock(vector.new(i, 1, j))
+                )
+            end
+        end
+        assert.are.equal(100, blocksTested)
+    end)
+
 
     it("Error on too few Blocks", function()
         local blocksToTest = blockAmount * 2 + 1

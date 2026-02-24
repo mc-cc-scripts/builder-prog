@@ -13,10 +13,11 @@ local function help()
     print("Options:")
     print("-mH[movementDir. Horizon] <'left'|'right'> [default: right]")
     print("-mV[movementDir. Vertical] <'down'|'up'> [default: up]")
+    print("-p (place) up | down")
     print("-w[width] <number>")
     print("-l[length] <number>")
     print("-h[height] <number>")
-    print("-help")
+    print("help")
 end
 if #arg == 0 then
     help()
@@ -58,9 +59,9 @@ local argsSwitch = {
         end
         size["height"] = tonumber(arg[no[1]])
     end,
-    ["-help"] = function()
-        help()
-        stopExec = true
+    ["-p"] = function(no)
+        no[1] = no[1] + 1
+        builder.placeDirection = arg[no[1]]
     end,
     ["help"] = function()
         help()

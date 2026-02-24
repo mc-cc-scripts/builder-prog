@@ -3,7 +3,8 @@ local Builder_Lib = {
     movementDirection = {
         height = "up",
         width = "right"
-    }
+    },
+    placeDirection = "down"
 }
 
 
@@ -23,19 +24,33 @@ local function selectItemToPlace(itemname)
     if item == nil or item.name ~= itemname then
         local slot = turtleController:findItemInInventory(itemname)
         if slot == nil then
-            error("No more blocks available to build")
+            error("No more blocks available to build" .. tostring(turtle.getItemCount()))
         end
         turtle.select(slot)
     end
 end
 
-local function placeDownItem(itemname)
+---
+---@param self Builder_Lib
+---@param itemname string
+local function placeItem(self, itemname)
     selectItemToPlace(itemname)
-    if turtle.detectDown() then
-        local _, down = turtle.inspectDown()
-        turtleController:tryAction("digD")
+    local function action()
+        if (self.placeDirection == "down") then
+            if turtle.detectDown() then
+                local _, down = turtle.inspectDown()
+                turtleController:tryAction("digD")
+            end
+            return turtle.placeDown()
+        else
+            if turtle.detectUp() then
+                local _, down = turtle.inspectUp()
+                turtleController:tryAction("digU")
+            end
+            return turtle.placeUp()
+        end
     end
-    local succ, txt = turtle.placeDown()
+    local succ, txt = action()
     if not succ then error(txt) end
 end
 
@@ -82,10 +97,10 @@ function Builder_Lib:floor(length, width)
     if block == nil then error("No block at item slot 1") end
     for j = 1, width, 1 do
         for i = 1, length - 1, 1 do
-            placeDownItem(block.name)
+            placeItem(self, block.name)
             turtleController:goStraight(1)
         end
-        placeDownItem(block.name)
+        placeItem(self, block.name)
         if (j < width) then
             getTurningDirection(self, j)
             turtleController:goStraight(1)
