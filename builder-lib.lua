@@ -51,7 +51,6 @@ local function placeItem(self, itemname)
         end
     end
     local succ, txt = action()
-    print("hi there" .. tostring(succ))
     if not succ then error(txt) end
 end
 
